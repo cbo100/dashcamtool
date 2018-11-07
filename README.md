@@ -26,6 +26,10 @@ Set the variables at the top of `blackvue-downloader.sh`:
 
 4. Optional: Rather than a regular schedule, you may have the ability to run the script when the camera connects to the network. Check your router settings.
 
+## Testing
+
+See [testserver/README.md](testserver/README.md)
+
 ## Credits
 
 This blog post for the URLs plus some of the `sed` scripts:
