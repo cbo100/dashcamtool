@@ -4,6 +4,8 @@
 
 Automatically copies the days videos from your dashcam.
 
+I have it scheduled to run every few minutes on my Synology NAS, if it finds my camera, it does the download. Should be equivalent functionality available on QNAP and other NAS systems, or any bash script host.
+
 ## Configuration
 
 Set the variables at the top of `blackvue-downloader.sh`:
@@ -24,3 +26,8 @@ Set the variables at the top of `blackvue-downloader.sh`:
 
 4. Optional: Rather than a regular schedule, you may have the ability to run the script when the camera connects to the network. Check your router settings.
 
+## Credits
+
+This blog post for the URLs plus some of the `sed` scripts:
+
+https://gadgetblogist.wordpress.com/2014/10/16/dashcam-hacking/

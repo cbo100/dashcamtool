@@ -2,6 +2,9 @@
 dashcam_host="localhost:8000"
 download_dir="./cars"
 vehicle_name="mycar"
+
+
+
 videolist=$(curl http://$dashcam_host/blackvue_vod.cgi)
 
 list_by_suffix () {
