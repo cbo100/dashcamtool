@@ -29,7 +29,7 @@ list_by_suffix () {
 }
 
 download_video () {
-  echo "Downloading ... http://$dashcam_host$1"
+  #echo "Downloading ... http://$dashcam_host$1"
   filename=`echo "$1" | sed 's/\/Record\///'`
   #echo $filename
   if [ -f $download_dir/$vehicle_name/$filename ]
@@ -64,7 +64,9 @@ download_by_suffix () {
 
 echo "Start download videos from dashcam..."
 rm -f $download_dir/temp/*.mp4
-rm -f $download_dir/$vehicle_name/*.mp4
+
+# Just for testing...
+# rm -f $download_dir/$vehicle_name/*.mp4
 
 # Download the files starting with what is most important to me
 # In case the car goes out of range before the ordered list gets to them
@@ -72,7 +74,7 @@ rm -f $download_dir/$vehicle_name/*.mp4
 # Feel free to re-order the list
 
 # Parameters are: <type to download> <number of context (before and after files) to download>
-
+# EF, ER, NR, NF???? - "[E]vent", "[M]anual", "[N]ormal", "[P]arking" + "[F]ront", "[R]ear"
 # Example: download all event files...
 download_by_suffix "_EF" 
 # ...then download the context around the event files...
