@@ -2,6 +2,7 @@
 dashcam_host="localhost:8000"
 download_dir="./cars"
 vehicle_name="mycar"
+curl_command="curl --fail --show-error --silent --connect-timeout 5  "
 
 if [ ! -d $download_dir ]
 then
@@ -18,7 +19,9 @@ then
   mkdir $download_dir/$vehicle_name
 fi
 
-videolist=$(curl -s -f http://$dashcam_host/blackvue_vod.cgi)
+log_message () {
+  echo "[`date --rfc-3339=seconds`] $1"
+}
 
 list_by_suffix () {
   echo "$videolist" \
@@ -34,20 +37,20 @@ download_video () {
   #echo $filename
   if [ -f $download_dir/$vehicle_name/$filename ]
   then
-    echo "$filename Already Downloaded..."
+    log_message "$filename Already Downloaded..."
   else
 #    echo "$1" > $download_dir/temp/$filename
-    if (curl "http://$dashcam_host$1" -f -s -o $download_dir/temp/$filename)
+    if ($curl_command "http://$dashcam_host$1" -o $download_dir/temp/$filename)
     then
       mv $download_dir/temp/$filename $download_dir/$vehicle_name/$filename
     else
-      echo "** $filename failed!!!!!"
+      log_message "** $filename failed!!!!!"
     fi
   fi
 }
 
 download_by_suffix () {
-  echo "Downloading $1 files..."
+  log_message "Downloading $1 files..."
   context_size=$2
   context_type=$3
   if [ -z "$context_size" ]
@@ -57,16 +60,21 @@ download_by_suffix () {
   fi
   for file in `list_by_suffix "$1" $context_size "$context_type" | tail -n 2000`
   do
-    echo "Downloading $file..."
+    log_message "Downloading $file..."
     download_video $file
   done
 }
 
-echo "Start download videos from dashcam..."
+
+log_message "Start download videos from dashcam..."
+
+# get the list of videos to download
+videolist=$($curl_command http://$dashcam_host/blackvue_vod.cgi)
+
 rm -f $download_dir/temp/*.mp4
 
 # Just for testing...
-# rm -f $download_dir/$vehicle_name/*.mp4
+rm -f $download_dir/$vehicle_name/*.mp4
 
 # Download the files starting with what is most important to me
 # In case the car goes out of range before the ordered list gets to them
