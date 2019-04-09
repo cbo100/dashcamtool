@@ -23,6 +23,11 @@ log_message () {
   echo "[`date --rfc-3339=seconds`] $1"
 }
 
+# stats...
+count_failed=0
+count_skipped=0
+count_downloaded=0
+
 list_by_suffix () {
   echo "$videolist" \
 | grep "n:/Record" `# video file lines start with this` \
@@ -32,25 +37,28 @@ list_by_suffix () {
 }
 
 download_video () {
-  #echo "Downloading ... http://$dashcam_host$1"
+  #log_message "Downloading ... http://$dashcam_host$1"
   filename=`echo "$1" | sed 's/\/Record\///'`
   #echo $filename
   if [ -f $download_dir/$vehicle_name/$filename ]
   then
-    log_message "$filename Already Downloaded..."
+    #log_message "$filename Already Downloaded..."
+    let count_skipped+=1
   else
 #    echo "$1" > $download_dir/temp/$filename
     if ($curl_command "http://$dashcam_host$1" -o $download_dir/temp/$filename)
     then
       mv $download_dir/temp/$filename $download_dir/$vehicle_name/$filename
+      let count_downloaded+=1
     else
-      log_message "** $filename failed!!!!!"
+      #log_message "** $filename failed!!!!!"
+      let count_failed+=1
     fi
   fi
 }
 
 download_by_suffix () {
-  log_message "Downloading $1 files..."
+  #log_message "Downloading $1 files..."
   context_size=$2
   context_type=$3
   if [ -z "$context_size" ]
@@ -60,7 +68,7 @@ download_by_suffix () {
   fi
   for file in `list_by_suffix "$1" $context_size "$context_type" | tail -n 2000`
   do
-    log_message "Downloading $file..."
+    #log_message "Downloading $file..."
     download_video $file
   done
 }
@@ -74,7 +82,7 @@ videolist=$($curl_command http://$dashcam_host/blackvue_vod.cgi)
 rm -f $download_dir/temp/*.mp4
 
 # Just for testing...
-rm -f $download_dir/$vehicle_name/*.mp4
+# rm -f $download_dir/$vehicle_name/*.mp4
 
 # Download the files starting with what is most important to me
 # In case the car goes out of range before the ordered list gets to them
@@ -99,3 +107,8 @@ download_by_suffix "_PR" 0
 
 # all normal files
 download_by_suffix "_N" 0 
+
+
+log_message "Skipped: $count_skipped"
+log_message "Failed: $count_failed"
+log_message "Downloaded: $count_downloaded"
